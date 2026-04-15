@@ -1,0 +1,280 @@
+{
+  "name": "Clinic Referral — Main",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [{ "mode": "everyX", "value": 5, "unit": "minutes" }]
+        },
+        "documentId": { "__rl": true, "value": "={{ $env.GOOGLE_SHEET_ID }}", "mode": "id" },
+        "sheetName": { "__rl": true, "value": "Encaminhamentos", "mode": "name" },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "id": "node-trigger",
+      "name": "Google Sheets Trigger",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "cond-status-empty",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "",
+              "operator": { "type": "string", "operation": "equals" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "node-if-status",
+      "name": "Status is empty?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [420, 300]
+    },
+    {
+      "parameters": {
+        "documentId": { "__rl": true, "value": "={{ $env.GOOGLE_SHEET_ID }}", "mode": "id" },
+        "sheetName": { "__rl": true, "value": "Centros", "mode": "name" },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "centro_id",
+              "lookupValue": "={{ $json.centro_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node-lookup-centro",
+      "name": "Lookup Centro Email",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [640, 220]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            { "conditions": { "conditions": [{ "leftValue": "={{ $json.numero_sesiones }}", "rightValue": "5", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" }, "renameOutput": true, "outputKey": "5" },
+            { "conditions": { "conditions": [{ "leftValue": "={{ $json.numero_sesiones }}", "rightValue": "10", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" }, "renameOutput": true, "outputKey": "10" },
+            { "conditions": { "conditions": [{ "leftValue": "={{ $json.numero_sesiones }}", "rightValue": "15", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" }, "renameOutput": true, "outputKey": "15" },
+            { "conditions": { "conditions": [{ "leftValue": "={{ $json.numero_sesiones }}", "rightValue": "20", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" }, "renameOutput": true, "outputKey": "20" }
+          ]
+        },
+        "options": { "fallbackOutput": "extra" }
+      },
+      "id": "node-switch-sessions",
+      "name": "Switch Sessions",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [860, 220]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://graph.microsoft.com/v1.0/sites/{{ $env.SHAREPOINT_SITE_ID }}/drives/{{ $env.SHAREPOINT_DRIVE_ID }}/items/{{ $env.TEMPLATE_ID_5S }}/content",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftOAuth2Api",
+        "options": { "response": { "response": { "responseFormat": "file" } } }
+      },
+      "id": "node-fetch-template-5",
+      "name": "Fetch Template 5s",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1080, 100]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://graph.microsoft.com/v1.0/sites/{{ $env.SHAREPOINT_SITE_ID }}/drives/{{ $env.SHAREPOINT_DRIVE_ID }}/items/{{ $env.TEMPLATE_ID_10S }}/content",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftOAuth2Api",
+        "options": { "response": { "response": { "responseFormat": "file" } } }
+      },
+      "id": "node-fetch-template-10",
+      "name": "Fetch Template 10s",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1080, 220]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://graph.microsoft.com/v1.0/sites/{{ $env.SHAREPOINT_SITE_ID }}/drives/{{ $env.SHAREPOINT_DRIVE_ID }}/items/{{ $env.TEMPLATE_ID_15S }}/content",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftOAuth2Api",
+        "options": { "response": { "response": { "responseFormat": "file" } } }
+      },
+      "id": "node-fetch-template-15",
+      "name": "Fetch Template 15s",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1080, 340]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://graph.microsoft.com/v1.0/sites/{{ $env.SHAREPOINT_SITE_ID }}/drives/{{ $env.SHAREPOINT_DRIVE_ID }}/items/{{ $env.TEMPLATE_ID_20S }}/content",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftOAuth2Api",
+        "options": { "response": { "response": { "responseFormat": "file" } } }
+      },
+      "id": "node-fetch-template-20",
+      "name": "Fetch Template 20s",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1080, 460]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Fill placeholders in Word .docx XML\n// The .docx binary comes from the previous HTTP Request node\n// We manipulate the XML inside the ZIP to replace {{PLACEHOLDER}} tokens\n\nconst JSZip = require('jszip');\n\nconst items = $input.all();\nconst results = [];\n\nfor (const item of items) {\n  // Get the binary docx file\n  const binaryKey = Object.keys(item.binary || {})[0];\n  if (!binaryKey) throw new Error('No binary data found in template node output');\n\n  const docxBuffer = Buffer.from(item.binary[binaryKey].data, 'base64');\n\n  // Get patient data from the trigger node\n  const patient = $('Google Sheets Trigger').first().json;\n  const centro   = $('Lookup Centro Email').first().json;\n\n  const placeholders = {\n    '{{NOMBRE_PACIENTE}}':  patient.nombre_paciente  || '',\n    '{{NUMERO_HISTORIA}}':  patient.numero_historia  || '',\n    '{{EXPEDIENTE}}':       patient.expediente       || '',\n    '{{NUMERO_SS}}':        patient.numero_ss        || '',\n    '{{CENTRO_DERIVADO}}':  centro.nombre            || patient.centro_id,\n    '{{FECHA}}':            patient.fecha            || new Date().toLocaleDateString('es-ES'),\n    '{{NUMERO_SESIONES}}':  String(patient.numero_sesiones || ''),\n    '{{DIAGNOSTICO}}':      patient.diagnostico      || '',\n    '{{MEDICO_REMITENTE}}': patient.medico_remitente || '',\n    '{{ESPECIALIDAD}}':     patient.especialidad     || '',\n    '{{TELEFONO_PACIENTE}}':patient.telefono_paciente|| '',\n    '{{FECHA_NACIMIENTO}}': patient.fecha_nacimiento || '',\n    '{{OBSERVACIONES}}':    patient.observaciones    || 'Sin observaciones.',\n  };\n\n  // Unzip, replace in word/document.xml, rezip\n  const zip = await JSZip.loadAsync(docxBuffer);\n  let xml = await zip.file('word/document.xml').async('string');\n\n  for (const [key, value] of Object.entries(placeholders)) {\n    // Escape for XML and also handle split-tag placeholders\n    xml = xml.split(key).join(value);\n  }\n\n  zip.file('word/document.xml', xml);\n  const filledBuffer = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });\n\n  results.push({\n    json: { ...patient, centro_email: centro.email },\n    binary: {\n      data: {\n        data: filledBuffer.toString('base64'),\n        mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',\n        fileName: `referral_${patient.numero_historia}.docx`,\n      }\n    }\n  });\n}\n\nreturn results;"
+      },
+      "id": "node-fill-placeholders",
+      "name": "Fill Placeholders (JS)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1300, 280]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.microsoft.com/v1.0/sites/{{ $env.SHAREPOINT_SITE_ID }}/drives/{{ $env.SHAREPOINT_DRIVE_ID }}/items/root:/referrals/{{ $json.numero_historia }}.docx:/content",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftOAuth2Api",
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "id": "node-upload-docx",
+      "name": "Upload Filled DOCX",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1520, 280]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://graph.microsoft.com/v1.0/sites/{{ $env.SHAREPOINT_SITE_ID }}/drives/{{ $env.SHAREPOINT_DRIVE_ID }}/items/{{ $json.id }}/content?format=pdf",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftOAuth2Api",
+        "options": { "response": { "response": { "responseFormat": "file" } } }
+      },
+      "id": "node-convert-pdf",
+      "name": "Convert Word → PDF",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1740, 280]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.centro_email }}",
+        "subject": "=Derivación de paciente: {{ $('Google Sheets Trigger').first().json.nombre_paciente }} — {{ $('Google Sheets Trigger').first().json.numero_sesiones }} sesiones",
+        "emailType": "html",
+        "message": "=<p>Estimado/a equipo de <strong>{{ $('Lookup Centro Email').first().json.nombre }}</strong>,</p>\n\n<p>Por medio del presente, les remitimos al/la paciente <strong>{{ $('Google Sheets Trigger').first().json.nombre_paciente }}</strong> para la realización de <strong>{{ $('Google Sheets Trigger').first().json.numero_sesiones }} sesiones</strong> de <strong>{{ $('Google Sheets Trigger').first().json.especialidad }}</strong>.</p>\n\n<p>A continuación, los datos del paciente:</p>\n<ul>\n  <li><strong>Nº Historia:</strong> {{ $('Google Sheets Trigger').first().json.numero_historia }}</li>\n  <li><strong>Nº Expediente:</strong> {{ $('Google Sheets Trigger').first().json.expediente }}</li>\n  <li><strong>Nº SS:</strong> {{ $('Google Sheets Trigger').first().json.numero_ss }}</li>\n  <li><strong>Fecha de nacimiento:</strong> {{ $('Google Sheets Trigger').first().json.fecha_nacimiento }}</li>\n  <li><strong>Teléfono:</strong> {{ $('Google Sheets Trigger').first().json.telefono_paciente }}</li>\n  <li><strong>Diagnóstico:</strong> {{ $('Google Sheets Trigger').first().json.diagnostico }}</li>\n</ul>\n\n<p>Adjunto encontrará la hoja de derivación en formato PDF firmada por <strong>{{ $('Google Sheets Trigger').first().json.medico_remitente }}</strong>.</p>\n\n<p>Ruégamos acusen recibo de este correo y confirmen disponibilidad para el inicio del tratamiento.</p>\n\n<p>En caso de cualquier duda, no duden en contactarnos.</p>\n\n<p>Atentamente,<br/>\n<strong>Unidad de Derivaciones — Clínica Central</strong></p>",
+        "attachments": "data",
+        "options": {}
+      },
+      "id": "node-send-email",
+      "name": "Send Email (Outlook)",
+      "type": "n8n-nodes-base.microsoftOutlook",
+      "typeVersion": 2,
+      "position": [1960, 280]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": { "__rl": true, "value": "={{ $env.GOOGLE_SHEET_ID }}", "mode": "id" },
+        "sheetName": { "__rl": true, "value": "Encaminhamentos", "mode": "name" },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status":    "enviado",
+            "timestamp": "={{ new Date().toISOString() }}",
+            "pdf_link":  "={{ $('Convert Word → PDF').first().json['@odata.context'] || '' }}",
+            "email_link": "={{ $('Send Email (Outlook)').first().json.id || '' }}"
+          },
+          "matchingColumns": ["numero_historia"]
+        },
+        "options": {}
+      },
+      "id": "node-update-sheet",
+      "name": "Update Sheet Status",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [2180, 280]
+    },
+    {
+      "parameters": {},
+      "id": "node-error-trigger",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [200, 520]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": { "__rl": true, "value": "={{ $env.GOOGLE_SHEET_ID }}", "mode": "id" },
+        "sheetName": { "__rl": true, "value": "Encaminhamentos", "mode": "name" },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status":    "error",
+            "timestamp": "={{ new Date().toISOString() }}"
+          },
+          "matchingColumns": ["numero_historia"]
+        },
+        "options": {}
+      },
+      "id": "node-error-update-sheet",
+      "name": "Mark Row as Error",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [420, 520]
+    }
+  ],
+  "connections": {
+    "Google Sheets Trigger":  { "main": [[{ "node": "Status is empty?",     "type": "main", "index": 0 }]] },
+    "Status is empty?":       { "main": [[{ "node": "Lookup Centro Email",   "type": "main", "index": 0 }], []] },
+    "Lookup Centro Email":    { "main": [[{ "node": "Switch Sessions",       "type": "main", "index": 0 }]] },
+    "Switch Sessions": {
+      "main": [
+        [{ "node": "Fetch Template 5s",  "type": "main", "index": 0 }],
+        [{ "node": "Fetch Template 10s", "type": "main", "index": 0 }],
+        [{ "node": "Fetch Template 15s", "type": "main", "index": 0 }],
+        [{ "node": "Fetch Template 20s", "type": "main", "index": 0 }]
+      ]
+    },
+    "Fetch Template 5s":      { "main": [[{ "node": "Fill Placeholders (JS)", "type": "main", "index": 0 }]] },
+    "Fetch Template 10s":     { "main": [[{ "node": "Fill Placeholders (JS)", "type": "main", "index": 0 }]] },
+    "Fetch Template 15s":     { "main": [[{ "node": "Fill Placeholders (JS)", "type": "main", "index": 0 }]] },
+    "Fetch Template 20s":     { "main": [[{ "node": "Fill Placeholders (JS)", "type": "main", "index": 0 }]] },
+    "Fill Placeholders (JS)": { "main": [[{ "node": "Upload Filled DOCX",    "type": "main", "index": 0 }]] },
+    "Upload Filled DOCX":     { "main": [[{ "node": "Convert Word → PDF",    "type": "main", "index": 0 }]] },
+    "Convert Word → PDF":     { "main": [[{ "node": "Send Email (Outlook)",  "type": "main", "index": 0 }]] },
+    "Send Email (Outlook)":   { "main": [[{ "node": "Update Sheet Status",   "type": "main", "index": 0 }]] },
+    "Error Trigger":          { "main": [[{ "node": "Mark Row as Error",     "type": "main", "index": 0 }]] }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "meta": { "templateCredsSetupCompleted": false },
+  "pinData": {},
+  "versionId": "1.0.0",
+  "triggerCount": 1,
+  "tags": [{ "name": "clinic" }, { "name": "referral" }, { "name": "portfolio" }]
+}

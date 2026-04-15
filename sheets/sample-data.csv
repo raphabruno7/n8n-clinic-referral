@@ -1,0 +1,4 @@
+nombre_paciente,numero_historia,expediente,numero_ss,centro_id,numero_sesiones,fecha,diagnostico,medico_remitente,especialidad,telefono_paciente,fecha_nacimiento,observaciones,status,timestamp,pdf_link,email_link
+María García López,HCL-2024-0041,EXP-7821,SS-284-91-3847,CTR-001,10,2026-04-15,Lumbalgia crónica,Dr. Rodríguez Fernández,Fisioterapia,+34 612 345 678,1978-06-12,Paciente con movilidad reducida. Preferencia horario mañanas.,,,,
+Carlos Martínez Ruiz,HCL-2024-0089,EXP-7830,SS-310-44-2291,CTR-002,5,2026-04-15,Tendinitis rotuliana,Dra. Sánchez Mora,Rehabilitación,+34 688 901 234,1992-03-25,Sin observaciones adicionales.,,,,
+Ana Pérez Torres,HCL-2024-0103,EXP-7845,SS-198-77-5512,CTR-001,20,2026-04-16,Fractura consolidada cúbito izquierdo post-quirúrgica,Dr. López Castillo,Fisioterapia,+34 654 789 012,1965-11-30,Revisión ortopédica pendiente. Coordinación con Dr. Vega.,,,,

@@ -1,0 +1,129 @@
+{
+  "name": "Clinic Referral — Follow-up Reminder",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "cronExpression", "expression": "0 8 * * 1-5" }] }
+      },
+      "id": "node-schedule",
+      "name": "Schedule (Mon–Fri 08:00)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": { "__rl": true, "value": "={{ $env.GOOGLE_SHEET_ID }}", "mode": "id" },
+        "sheetName": { "__rl": true, "value": "Encaminhamentos", "mode": "name" },
+        "filtersUI": {
+          "values": [{ "lookupColumn": "status", "lookupValue": "enviado" }]
+        },
+        "options": {}
+      },
+      "id": "node-read-sent",
+      "name": "Read Sent Referrals",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [420, 300]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Filter rows sent more than 7 days ago with no confirmation\nconst sevenDaysAgo = new Date();\nsevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);\n\nreturn $input.all().filter(item => {\n  const ts = item.json.timestamp;\n  if (!ts) return false;\n  return new Date(ts) < sevenDaysAgo;\n});"
+      },
+      "id": "node-filter-old",
+      "name": "Filter > 7 days ago",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [640, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $input.all().length }}",
+              "rightValue": 0,
+              "operator": { "type": "number", "operation": "gt" }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "node-if-has-pending",
+      "name": "Has pending follow-ups?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [860, 300]
+    },
+    {
+      "parameters": {
+        "documentId": { "__rl": true, "value": "={{ $env.GOOGLE_SHEET_ID }}", "mode": "id" },
+        "sheetName": { "__rl": true, "value": "Centros", "mode": "name" },
+        "filtersUI": {
+          "values": [{ "lookupColumn": "centro_id", "lookupValue": "={{ $json.centro_id }}" }]
+        },
+        "options": {}
+      },
+      "id": "node-lookup-centro-reminder",
+      "name": "Lookup Centro Email",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [1080, 220]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "=Recordatorio: Derivación pendiente — {{ $('Filter > 7 days ago').item.json.nombre_paciente }}",
+        "emailType": "html",
+        "message": "=<p>Estimado/a equipo de <strong>{{ $json.nombre }}</strong>,</p>\n\n<p>Les escribimos para recordarles que el pasado <strong>{{ $('Filter > 7 days ago').item.json.fecha }}</strong> les remitimos a la paciente <strong>{{ $('Filter > 7 days ago').item.json.nombre_paciente }}</strong> (Expediente: {{ $('Filter > 7 days ago').item.json.expediente }}) para {{ $('Filter > 7 days ago').item.json.numero_sesiones }} sesiones de {{ $('Filter > 7 days ago').item.json.especialidad }}.</p>\n\n<p>A la fecha, aún no hemos recibido confirmación de cita. Les rogamos nos confirmen el estado de la derivación a la mayor brevedad posible.</p>\n\n<p>Si ya han contactado con el/la paciente, pueden ignorar este mensaje.</p>\n\n<p>Muchas gracias por su colaboración.<br/>\n<strong>Unidad de Derivaciones — Clínica Central</strong></p>",
+        "options": {}
+      },
+      "id": "node-reminder-email",
+      "name": "Send Follow-up (Outlook)",
+      "type": "n8n-nodes-base.microsoftOutlook",
+      "typeVersion": 2,
+      "position": [1300, 220]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": { "__rl": true, "value": "={{ $env.GOOGLE_SHEET_ID }}", "mode": "id" },
+        "sheetName": { "__rl": true, "value": "Encaminhamentos", "mode": "name" },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status":    "reminder_sent",
+            "timestamp": "={{ new Date().toISOString() }}"
+          },
+          "matchingColumns": ["expediente"]
+        },
+        "options": {}
+      },
+      "id": "node-update-reminder",
+      "name": "Update Status: reminder_sent",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [1520, 220]
+    }
+  ],
+  "connections": {
+    "Schedule (Mon–Fri 08:00)":  { "main": [[{ "node": "Read Sent Referrals",       "type": "main", "index": 0 }]] },
+    "Read Sent Referrals":       { "main": [[{ "node": "Filter > 7 days ago",        "type": "main", "index": 0 }]] },
+    "Filter > 7 days ago":       { "main": [[{ "node": "Has pending follow-ups?",    "type": "main", "index": 0 }]] },
+    "Has pending follow-ups?":   { "main": [[{ "node": "Lookup Centro Email",        "type": "main", "index": 0 }], []] },
+    "Lookup Centro Email":       { "main": [[{ "node": "Send Follow-up (Outlook)",   "type": "main", "index": 0 }]] },
+    "Send Follow-up (Outlook)":  { "main": [[{ "node": "Update Status: reminder_sent", "type": "main", "index": 0 }]] }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true
+  },
+  "staticData": null,
+  "meta": { "templateCredsSetupCompleted": false },
+  "pinData": {},
+  "versionId": "1.0.0",
+  "triggerCount": 1,
+  "tags": [{ "name": "clinic" }, { "name": "reminder" }, { "name": "portfolio" }]
+}
