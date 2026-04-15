@@ -3,21 +3,44 @@
   "nodes": [
     {
       "parameters": {
-        "rule": { "interval": [{ "field": "cronExpression", "expression": "0 8 * * 1-5" }] }
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1-5"
+            }
+          ]
+        }
       },
       "id": "node-schedule",
       "name": "Schedule (Mon–Fri 08:00)",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [200, 300]
+      "position": [
+        200,
+        300
+      ]
     },
     {
       "parameters": {
         "operation": "read",
-        "documentId": { "__rl": true, "value": "={{ $env.GOOGLE_SHEET_ID }}", "mode": "id" },
-        "sheetName": { "__rl": true, "value": "Encaminhamentos", "mode": "name" },
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Encaminhamentos",
+          "mode": "name"
+        },
         "filtersUI": {
-          "values": [{ "lookupColumn": "status", "lookupValue": "enviado" }]
+          "values": [
+            {
+              "lookupColumn": "status",
+              "lookupValue": "enviado"
+            }
+          ]
         },
         "options": {}
       },
@@ -25,7 +48,10 @@
       "name": "Read Sent Referrals",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
-      "position": [420, 300]
+      "position": [
+        420,
+        300
+      ]
     },
     {
       "parameters": {
@@ -36,7 +62,10 @@
       "name": "Filter > 7 days ago",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [640, 300]
+      "position": [
+        640,
+        300
+      ]
     },
     {
       "parameters": {
@@ -45,7 +74,10 @@
             {
               "leftValue": "={{ $input.all().length }}",
               "rightValue": 0,
-              "operator": { "type": "number", "operation": "gt" }
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
             }
           ],
           "combinator": "and"
@@ -55,14 +87,30 @@
       "name": "Has pending follow-ups?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [860, 300]
+      "position": [
+        860,
+        300
+      ]
     },
     {
       "parameters": {
-        "documentId": { "__rl": true, "value": "={{ $env.GOOGLE_SHEET_ID }}", "mode": "id" },
-        "sheetName": { "__rl": true, "value": "Centros", "mode": "name" },
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Centros",
+          "mode": "name"
+        },
         "filtersUI": {
-          "values": [{ "lookupColumn": "centro_id", "lookupValue": "={{ $json.centro_id }}" }]
+          "values": [
+            {
+              "lookupColumn": "centro_id",
+              "lookupValue": "={{ $json.centro_id }}"
+            }
+          ]
         },
         "options": {}
       },
@@ -70,7 +118,10 @@
       "name": "Lookup Centro Email",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
-      "position": [1080, 220]
+      "position": [
+        1080,
+        220
+      ]
     },
     {
       "parameters": {
@@ -84,20 +135,33 @@
       "name": "Send Follow-up (Outlook)",
       "type": "n8n-nodes-base.microsoftOutlook",
       "typeVersion": 2,
-      "position": [1300, 220]
+      "position": [
+        1300,
+        220
+      ]
     },
     {
       "parameters": {
         "operation": "update",
-        "documentId": { "__rl": true, "value": "={{ $env.GOOGLE_SHEET_ID }}", "mode": "id" },
-        "sheetName": { "__rl": true, "value": "Encaminhamentos", "mode": "name" },
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Encaminhamentos",
+          "mode": "name"
+        },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "status":    "reminder_sent",
+            "status": "reminder_sent",
             "timestamp": "={{ new Date().toISOString() }}"
           },
-          "matchingColumns": ["expediente"]
+          "matchingColumns": [
+            "expediente"
+          ]
         },
         "options": {}
       },
@@ -105,25 +169,100 @@
       "name": "Update Status: reminder_sent",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
-      "position": [1520, 220]
+      "position": [
+        1520,
+        220
+      ]
     }
   ],
   "connections": {
-    "Schedule (Mon–Fri 08:00)":  { "main": [[{ "node": "Read Sent Referrals",       "type": "main", "index": 0 }]] },
-    "Read Sent Referrals":       { "main": [[{ "node": "Filter > 7 days ago",        "type": "main", "index": 0 }]] },
-    "Filter > 7 days ago":       { "main": [[{ "node": "Has pending follow-ups?",    "type": "main", "index": 0 }]] },
-    "Has pending follow-ups?":   { "main": [[{ "node": "Lookup Centro Email",        "type": "main", "index": 0 }], []] },
-    "Lookup Centro Email":       { "main": [[{ "node": "Send Follow-up (Outlook)",   "type": "main", "index": 0 }]] },
-    "Send Follow-up (Outlook)":  { "main": [[{ "node": "Update Status: reminder_sent", "type": "main", "index": 0 }]] }
+    "Schedule (Mon–Fri 08:00)": {
+      "main": [
+        [
+          {
+            "node": "Read Sent Referrals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Sent Referrals": {
+      "main": [
+        [
+          {
+            "node": "Filter > 7 days ago",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter > 7 days ago": {
+      "main": [
+        [
+          {
+            "node": "Has pending follow-ups?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has pending follow-ups?": {
+      "main": [
+        [
+          {
+            "node": "Lookup Centro Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Lookup Centro Email": {
+      "main": [
+        [
+          {
+            "node": "Send Follow-up (Outlook)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Follow-up (Outlook)": {
+      "main": [
+        [
+          {
+            "node": "Update Status: reminder_sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
   "settings": {
     "executionOrder": "v1",
     "saveManualExecutions": true
   },
   "staticData": null,
-  "meta": { "templateCredsSetupCompleted": false },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
   "pinData": {},
-  "versionId": "1.0.0",
   "triggerCount": 1,
-  "tags": [{ "name": "clinic" }, { "name": "reminder" }, { "name": "portfolio" }]
+  "tags": [
+    {
+      "name": "clinic"
+    },
+    {
+      "name": "reminder"
+    },
+    {
+      "name": "portfolio"
+    }
+  ]
 }

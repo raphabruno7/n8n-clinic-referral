@@ -4,10 +4,24 @@
     {
       "parameters": {
         "pollTimes": {
-          "item": [{ "mode": "everyX", "value": 5, "unit": "minutes" }]
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 5,
+              "unit": "minutes"
+            }
+          ]
         },
-        "documentId": { "__rl": true, "value": "={{ $env.GOOGLE_SHEET_ID }}", "mode": "id" },
-        "sheetName": { "__rl": true, "value": "Encaminhamentos", "mode": "name" },
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Encaminhamentos",
+          "mode": "name"
+        },
         "event": "rowAdded",
         "options": {}
       },
@@ -15,18 +29,28 @@
       "name": "Google Sheets Trigger",
       "type": "n8n-nodes-base.googleSheetsTrigger",
       "typeVersion": 1,
-      "position": [200, 300]
+      "position": [
+        200,
+        300
+      ]
     },
     {
       "parameters": {
         "conditions": {
-          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
           "conditions": [
             {
               "id": "cond-status-empty",
               "leftValue": "={{ $json.status }}",
               "rightValue": "",
-              "operator": { "type": "string", "operation": "equals" }
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
             }
           ],
           "combinator": "and"
@@ -37,12 +61,23 @@
       "name": "Status is empty?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [420, 300]
+      "position": [
+        420,
+        300
+      ]
     },
     {
       "parameters": {
-        "documentId": { "__rl": true, "value": "={{ $env.GOOGLE_SHEET_ID }}", "mode": "id" },
-        "sheetName": { "__rl": true, "value": "Centros", "mode": "name" },
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Centros",
+          "mode": "name"
+        },
         "filtersUI": {
           "values": [
             {
@@ -57,25 +92,97 @@
       "name": "Lookup Centro Email",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
-      "position": [640, 220]
+      "position": [
+        640,
+        220
+      ]
     },
     {
       "parameters": {
         "rules": {
           "values": [
-            { "conditions": { "conditions": [{ "leftValue": "={{ $json.numero_sesiones }}", "rightValue": "5", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" }, "renameOutput": true, "outputKey": "5" },
-            { "conditions": { "conditions": [{ "leftValue": "={{ $json.numero_sesiones }}", "rightValue": "10", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" }, "renameOutput": true, "outputKey": "10" },
-            { "conditions": { "conditions": [{ "leftValue": "={{ $json.numero_sesiones }}", "rightValue": "15", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" }, "renameOutput": true, "outputKey": "15" },
-            { "conditions": { "conditions": [{ "leftValue": "={{ $json.numero_sesiones }}", "rightValue": "20", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" }, "renameOutput": true, "outputKey": "20" }
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.numero_sesiones }}",
+                    "rightValue": "5",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "5"
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.numero_sesiones }}",
+                    "rightValue": "10",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "10"
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.numero_sesiones }}",
+                    "rightValue": "15",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "15"
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.numero_sesiones }}",
+                    "rightValue": "20",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "20"
+            }
           ]
         },
-        "options": { "fallbackOutput": "extra" }
+        "options": {
+          "fallbackOutput": "extra"
+        }
       },
       "id": "node-switch-sessions",
       "name": "Switch Sessions",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
-      "position": [860, 220]
+      "position": [
+        860,
+        220
+      ]
     },
     {
       "parameters": {
@@ -83,13 +190,22 @@
         "url": "=https://graph.microsoft.com/v1.0/sites/{{ $env.SHAREPOINT_SITE_ID }}/drives/{{ $env.SHAREPOINT_DRIVE_ID }}/items/{{ $env.TEMPLATE_ID_5S }}/content",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "microsoftOAuth2Api",
-        "options": { "response": { "response": { "responseFormat": "file" } } }
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
       },
       "id": "node-fetch-template-5",
       "name": "Fetch Template 5s",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1080, 100]
+      "position": [
+        1080,
+        100
+      ]
     },
     {
       "parameters": {
@@ -97,13 +213,22 @@
         "url": "=https://graph.microsoft.com/v1.0/sites/{{ $env.SHAREPOINT_SITE_ID }}/drives/{{ $env.SHAREPOINT_DRIVE_ID }}/items/{{ $env.TEMPLATE_ID_10S }}/content",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "microsoftOAuth2Api",
-        "options": { "response": { "response": { "responseFormat": "file" } } }
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
       },
       "id": "node-fetch-template-10",
       "name": "Fetch Template 10s",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1080, 220]
+      "position": [
+        1080,
+        220
+      ]
     },
     {
       "parameters": {
@@ -111,13 +236,22 @@
         "url": "=https://graph.microsoft.com/v1.0/sites/{{ $env.SHAREPOINT_SITE_ID }}/drives/{{ $env.SHAREPOINT_DRIVE_ID }}/items/{{ $env.TEMPLATE_ID_15S }}/content",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "microsoftOAuth2Api",
-        "options": { "response": { "response": { "responseFormat": "file" } } }
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
       },
       "id": "node-fetch-template-15",
       "name": "Fetch Template 15s",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1080, 340]
+      "position": [
+        1080,
+        340
+      ]
     },
     {
       "parameters": {
@@ -125,13 +259,22 @@
         "url": "=https://graph.microsoft.com/v1.0/sites/{{ $env.SHAREPOINT_SITE_ID }}/drives/{{ $env.SHAREPOINT_DRIVE_ID }}/items/{{ $env.TEMPLATE_ID_20S }}/content",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "microsoftOAuth2Api",
-        "options": { "response": { "response": { "responseFormat": "file" } } }
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
       },
       "id": "node-fetch-template-20",
       "name": "Fetch Template 20s",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1080, 460]
+      "position": [
+        1080,
+        460
+      ]
     },
     {
       "parameters": {
@@ -142,7 +285,10 @@
       "name": "Fill Placeholders (JS)",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1300, 280]
+      "position": [
+        1300,
+        280
+      ]
     },
     {
       "parameters": {
@@ -159,7 +305,10 @@
       "name": "Upload Filled DOCX",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1520, 280]
+      "position": [
+        1520,
+        280
+      ]
     },
     {
       "parameters": {
@@ -167,13 +316,22 @@
         "url": "=https://graph.microsoft.com/v1.0/sites/{{ $env.SHAREPOINT_SITE_ID }}/drives/{{ $env.SHAREPOINT_DRIVE_ID }}/items/{{ $json.id }}/content?format=pdf",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "microsoftOAuth2Api",
-        "options": { "response": { "response": { "responseFormat": "file" } } }
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
       },
       "id": "node-convert-pdf",
       "name": "Convert Word → PDF",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1740, 280]
+      "position": [
+        1740,
+        280
+      ]
     },
     {
       "parameters": {
@@ -188,22 +346,35 @@
       "name": "Send Email (Outlook)",
       "type": "n8n-nodes-base.microsoftOutlook",
       "typeVersion": 2,
-      "position": [1960, 280]
+      "position": [
+        1960,
+        280
+      ]
     },
     {
       "parameters": {
         "operation": "update",
-        "documentId": { "__rl": true, "value": "={{ $env.GOOGLE_SHEET_ID }}", "mode": "id" },
-        "sheetName": { "__rl": true, "value": "Encaminhamentos", "mode": "name" },
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Encaminhamentos",
+          "mode": "name"
+        },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "status":    "enviado",
+            "status": "enviado",
             "timestamp": "={{ new Date().toISOString() }}",
-            "pdf_link":  "={{ $('Convert Word → PDF').first().json['@odata.context'] || '' }}",
+            "pdf_link": "={{ $('Convert Word → PDF').first().json['@odata.context'] || '' }}",
             "email_link": "={{ $('Send Email (Outlook)').first().json.id || '' }}"
           },
-          "matchingColumns": ["numero_historia"]
+          "matchingColumns": [
+            "numero_historia"
+          ]
         },
         "options": {}
       },
@@ -211,7 +382,10 @@
       "name": "Update Sheet Status",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
-      "position": [2180, 280]
+      "position": [
+        2180,
+        280
+      ]
     },
     {
       "parameters": {},
@@ -219,20 +393,33 @@
       "name": "Error Trigger",
       "type": "n8n-nodes-base.errorTrigger",
       "typeVersion": 1,
-      "position": [200, 520]
+      "position": [
+        200,
+        520
+      ]
     },
     {
       "parameters": {
         "operation": "update",
-        "documentId": { "__rl": true, "value": "={{ $env.GOOGLE_SHEET_ID }}", "mode": "id" },
-        "sheetName": { "__rl": true, "value": "Encaminhamentos", "mode": "name" },
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Encaminhamentos",
+          "mode": "name"
+        },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "status":    "error",
+            "status": "error",
             "timestamp": "={{ new Date().toISOString() }}"
           },
-          "matchingColumns": ["numero_historia"]
+          "matchingColumns": [
+            "numero_historia"
+          ]
         },
         "options": {}
       },
@@ -240,30 +427,178 @@
       "name": "Mark Row as Error",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
-      "position": [420, 520]
+      "position": [
+        420,
+        520
+      ]
     }
   ],
   "connections": {
-    "Google Sheets Trigger":  { "main": [[{ "node": "Status is empty?",     "type": "main", "index": 0 }]] },
-    "Status is empty?":       { "main": [[{ "node": "Lookup Centro Email",   "type": "main", "index": 0 }], []] },
-    "Lookup Centro Email":    { "main": [[{ "node": "Switch Sessions",       "type": "main", "index": 0 }]] },
-    "Switch Sessions": {
+    "Google Sheets Trigger": {
       "main": [
-        [{ "node": "Fetch Template 5s",  "type": "main", "index": 0 }],
-        [{ "node": "Fetch Template 10s", "type": "main", "index": 0 }],
-        [{ "node": "Fetch Template 15s", "type": "main", "index": 0 }],
-        [{ "node": "Fetch Template 20s", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Status is empty?",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
-    "Fetch Template 5s":      { "main": [[{ "node": "Fill Placeholders (JS)", "type": "main", "index": 0 }]] },
-    "Fetch Template 10s":     { "main": [[{ "node": "Fill Placeholders (JS)", "type": "main", "index": 0 }]] },
-    "Fetch Template 15s":     { "main": [[{ "node": "Fill Placeholders (JS)", "type": "main", "index": 0 }]] },
-    "Fetch Template 20s":     { "main": [[{ "node": "Fill Placeholders (JS)", "type": "main", "index": 0 }]] },
-    "Fill Placeholders (JS)": { "main": [[{ "node": "Upload Filled DOCX",    "type": "main", "index": 0 }]] },
-    "Upload Filled DOCX":     { "main": [[{ "node": "Convert Word → PDF",    "type": "main", "index": 0 }]] },
-    "Convert Word → PDF":     { "main": [[{ "node": "Send Email (Outlook)",  "type": "main", "index": 0 }]] },
-    "Send Email (Outlook)":   { "main": [[{ "node": "Update Sheet Status",   "type": "main", "index": 0 }]] },
-    "Error Trigger":          { "main": [[{ "node": "Mark Row as Error",     "type": "main", "index": 0 }]] }
+    "Status is empty?": {
+      "main": [
+        [
+          {
+            "node": "Lookup Centro Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Lookup Centro Email": {
+      "main": [
+        [
+          {
+            "node": "Switch Sessions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Sessions": {
+      "main": [
+        [
+          {
+            "node": "Fetch Template 5s",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fetch Template 10s",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fetch Template 15s",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fetch Template 20s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Template 5s": {
+      "main": [
+        [
+          {
+            "node": "Fill Placeholders (JS)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Template 10s": {
+      "main": [
+        [
+          {
+            "node": "Fill Placeholders (JS)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Template 15s": {
+      "main": [
+        [
+          {
+            "node": "Fill Placeholders (JS)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Template 20s": {
+      "main": [
+        [
+          {
+            "node": "Fill Placeholders (JS)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fill Placeholders (JS)": {
+      "main": [
+        [
+          {
+            "node": "Upload Filled DOCX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Filled DOCX": {
+      "main": [
+        [
+          {
+            "node": "Convert Word → PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert Word → PDF": {
+      "main": [
+        [
+          {
+            "node": "Send Email (Outlook)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email (Outlook)": {
+      "main": [
+        [
+          {
+            "node": "Update Sheet Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Mark Row as Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
   "settings": {
     "executionOrder": "v1",
@@ -272,9 +607,20 @@
     "errorWorkflow": ""
   },
   "staticData": null,
-  "meta": { "templateCredsSetupCompleted": false },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
   "pinData": {},
-  "versionId": "1.0.0",
   "triggerCount": 1,
-  "tags": [{ "name": "clinic" }, { "name": "referral" }, { "name": "portfolio" }]
+  "tags": [
+    {
+      "name": "clinic"
+    },
+    {
+      "name": "referral"
+    },
+    {
+      "name": "portfolio"
+    }
+  ]
 }
